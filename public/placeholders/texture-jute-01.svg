@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200">
+  <defs>
+    <pattern id="weave1" width="24" height="24" patternUnits="userSpaceOnUse">
+      <rect width="24" height="24" fill="#F4EEE2"/>
+      <path d="M0 12H24" stroke="#C6A365" stroke-width="1.4" opacity="0.35"/>
+      <path d="M12 0V24" stroke="#9C6B3F" stroke-width="1.4" opacity="0.2"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="1200" fill="#F4EEE2"/>
+  <rect width="1200" height="1200" fill="url(#weave1)"/>
+  <g opacity="0.16" stroke="#2A2420" stroke-width="6" fill="none" stroke-linejoin="round">
+    <rect x="380" y="480" width="440" height="380" rx="10"/>
+    <path d="M460 480 C460 380 740 380 740 480"/>
+  </g>
+</svg>

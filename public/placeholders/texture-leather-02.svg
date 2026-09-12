@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200">
+  <defs>
+    <pattern id="grain2" width="11" height="11" patternUnits="userSpaceOnUse" patternTransform="rotate(-30)">
+      <rect width="11" height="11" fill="#9C6B3F"/>
+      <path d="M0 5.5H11" stroke="#7A5230" stroke-width="1" opacity="0.35"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="1200" fill="#9C6B3F"/>
+  <rect width="1200" height="1200" fill="url(#grain2)"/>
+  <g opacity="0.2" stroke="#2A2420" stroke-width="5" fill="none" stroke-linejoin="round">
+    <rect x="440" y="540" width="320" height="230" rx="8"/>
+    <path d="M600 540V770" opacity="0.6"/>
+  </g>
+</svg>
