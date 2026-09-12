@@ -1,8 +1,10 @@
 export const SITE_NAME = "Arven";
 export const SITE_TAGLINE = "Natural materials, made to last.";
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-export const STORE_EMAIL = process.env.NEXT_PUBLIC_STORE_EMAIL ?? "hello@arven.co";
-export const STORE_PHONE = process.env.NEXT_PUBLIC_STORE_PHONE ?? "+1 (555) 010-2938";
+// `||` (not `??`) on purpose: Vercel env vars left blank in the dashboard
+// come through as "" rather than undefined, and `??` wouldn't fall back.
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+export const STORE_EMAIL = process.env.NEXT_PUBLIC_STORE_EMAIL || "hello@arven.co";
+export const STORE_PHONE = process.env.NEXT_PUBLIC_STORE_PHONE || "+1 (555) 010-2938";
 export const STORE_ADDRESS = "142 Foundry Lane, Portland, OR 97209";
 export const FREE_SHIPPING_THRESHOLD = 10000; // cents
 
