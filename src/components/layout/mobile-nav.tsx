@@ -7,6 +7,7 @@ import { Menu, User } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { MAIN_NAV } from "@/lib/constants";
+import { DEMO_MODE } from "@/lib/demo-mode";
 
 export function MobileNav({ isAuthenticated }: { isAuthenticated: boolean }) {
   const [open, setOpen] = useState(false);
@@ -38,15 +39,19 @@ export function MobileNav({ isAuthenticated }: { isAuthenticated: boolean }) {
             </Link>
           ))}
         </nav>
-        <Separator className="my-2" />
-        <Link
-          href={isAuthenticated ? "/account" : "/login"}
-          onClick={() => setOpen(false)}
-          className="flex items-center gap-2 py-3 text-sm text-foreground"
-        >
-          <User className="h-4 w-4" strokeWidth={1.5} />
-          {isAuthenticated ? "Your Account" : "Sign In"}
-        </Link>
+        {!DEMO_MODE && (
+          <>
+            <Separator className="my-2" />
+            <Link
+              href={isAuthenticated ? "/account" : "/login"}
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2 py-3 text-sm text-foreground"
+            >
+              <User className="h-4 w-4" strokeWidth={1.5} />
+              {isAuthenticated ? "Your Account" : "Sign In"}
+            </Link>
+          </>
+        )}
         <div className="mt-auto flex flex-col gap-1 pt-6 text-sm text-muted-foreground">
           <Link href="/contact" onClick={() => setOpen(false)}>Contact</Link>
           <Link href="/shipping" onClick={() => setOpen(false)}>Shipping</Link>

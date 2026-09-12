@@ -3,6 +3,7 @@ import { User } from "lucide-react";
 
 import { getCurrentUser } from "@/lib/session";
 import { MAIN_NAV, SITE_NAME } from "@/lib/constants";
+import { DEMO_MODE } from "@/lib/demo-mode";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { SearchDialog } from "@/components/layout/search-dialog";
 import { CartButton } from "@/components/layout/cart-button";
@@ -37,13 +38,15 @@ export async function Header() {
 
         <div className="flex items-center gap-1">
           <SearchDialog />
-          <Link
-            href={user ? "/account" : "/login"}
-            aria-label={user ? "Your account" : "Sign in"}
-            className="hidden h-10 w-10 items-center justify-center text-foreground transition-colors hover:text-clay sm:flex"
-          >
-            <User className="h-5 w-5" strokeWidth={1.5} />
-          </Link>
+          {!DEMO_MODE && (
+            <Link
+              href={user ? "/account" : "/login"}
+              aria-label={user ? "Your account" : "Sign in"}
+              className="hidden h-10 w-10 items-center justify-center text-foreground transition-colors hover:text-clay sm:flex"
+            >
+              <User className="h-5 w-5" strokeWidth={1.5} />
+            </Link>
+          )}
           <CartButton />
         </div>
       </div>

@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { createClient } from "@/lib/supabase/server";
+import { DEMO_MODE } from "@/lib/demo-mode";
+import { DEMO_PRODUCTS } from "@/lib/demo-data";
+import { FREE_SHIPPING_THRESHOLD } from "@/lib/constants";
 
 const orderSchema = z.object({
   email: z.string().email(),
@@ -28,6 +31,12 @@ const orderSchema = z.object({
     .min(1),
 });
 
+function generateOrderNumber() {
+  const stamp = Date.now().toString(36).toUpperCase();
+  const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
+  return `ARV-${stamp}-${rand}`;
+}
+
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
   const parsed = orderSchema.safeParse(body);
@@ -37,6 +46,69 @@ export async function POST(request: Request) {
       { error: "Please check your order details and try again." },
       { status: 400 },
     );
+  }
+
+  if (DEMO_MODE) {
+    // Nothing is persisted here — prices are still re-derived server-side
+    // from the static catalog (never trusted from the request body), and
+    // the full order is handed back for the confirmation page to render
+    // from sessionStorage. See src/lib/demo-mode.ts to go live for real.
+    const { email, phone, shipping, paymentMethod, notes, items } = parsed.data;
+
+    let subtotal = 0;
+    const orderItems = [];
+
+    for (const item of items) {
+      const product = DEMO_PRODUCTS.find((p) => p.id === item.productId);
+      if (!product) {
+        return NextResponse.json({ error: "One of these items is no longer available." }, { status: 409 });
+      }
+
+      const variant = item.variantId ? product.variants.find((v) => v.id === item.variantId) : undefined;
+      const availableStock = variant ? variant.stock : product.stock;
+      if (availableStock < item.quantity) {
+        return NextResponse.json({ error: `${product.name} is out of stock.` }, { status: 409 });
+      }
+
+      const unitPrice = product.price + (variant?.priceDelta ?? 0);
+      subtotal += unitPrice * item.quantity;
+
+      orderItems.push({
+        productName: product.name,
+        variantLabel: variant ? `${variant.name}: ${variant.value}` : null,
+        imageUrl: product.images[0]?.url ?? null,
+        quantity: item.quantity,
+        unitPrice,
+        totalPrice: unitPrice * item.quantity,
+      });
+    }
+
+    const shippingCost = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 800;
+    const total = subtotal + shippingCost;
+    const orderNumber = generateOrderNumber();
+
+    return NextResponse.json({
+      orderNumber,
+      order: {
+        orderNumber,
+        email,
+        phone,
+        items: orderItems,
+        subtotal,
+        shippingCost,
+        total,
+        paymentMethod,
+        orderStatus: paymentMethod === "card" ? "paid" : "pending",
+        shippingName: shipping.fullName,
+        shippingAddress: shipping.line1,
+        shippingAddress2: shipping.line2 ?? null,
+        shippingCity: shipping.city,
+        shippingState: shipping.state,
+        shippingPostcode: shipping.postalCode,
+        shippingCountry: shipping.country,
+        notes: notes ?? null,
+      },
+    });
   }
 
   const supabase = await createClient();

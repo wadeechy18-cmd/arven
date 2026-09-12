@@ -1,9 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
+import { DEMO_MODE } from "@/lib/demo-mode";
+import { DEMO_CATEGORIES, DEMO_PRODUCTS } from "@/lib/demo-data";
 
 // App-facing view models. Kept camelCase (and the old field names) on
 // purpose: the select() strings below alias every Postgres column back to
-// this shape, so page/component code doesn't need to know the DB is now
-// Supabase instead of Prisma. Once you run
+// this shape, so page/component code doesn't need to know the DB is
+// Supabase (or, in demo mode, nothing at all). Once you run
 // `supabase gen types typescript --project-id <id>` against your live
 // project, you can tighten these to fully-generated types if you want.
 
@@ -79,6 +81,8 @@ const PRODUCT_SELECT = `
 `;
 
 export async function getCategories(): Promise<CategoryView[]> {
+  if (DEMO_MODE) return DEMO_CATEGORIES;
+
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("categories")
@@ -90,6 +94,8 @@ export async function getCategories(): Promise<CategoryView[]> {
 }
 
 export async function getCategoryBySlug(slug: string): Promise<CategoryView | null> {
+  if (DEMO_MODE) return DEMO_CATEGORIES.find((c) => c.slug === slug) ?? null;
+
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("categories")
@@ -111,7 +117,51 @@ export interface ProductFilters {
   newArrivalsOnly?: boolean;
 }
 
+function filterDemoProducts(filters: ProductFilters): ProductWithRelations[] {
+  let results = [...DEMO_PRODUCTS];
+
+  if (filters.categorySlug && filters.categorySlug !== "all") {
+    results = results.filter((p) => p.category.slug === filters.categorySlug);
+  }
+  if (filters.search) {
+    const q = filters.search.toLowerCase();
+    results = results.filter(
+      (p) =>
+        p.name.toLowerCase().includes(q) ||
+        p.shortDescription.toLowerCase().includes(q) ||
+        p.material.toLowerCase().includes(q),
+    );
+  }
+  if (filters.minPrice !== undefined) results = results.filter((p) => p.price >= filters.minPrice!);
+  if (filters.maxPrice !== undefined) results = results.filter((p) => p.price <= filters.maxPrice!);
+  if (filters.bestSellersOnly) results = results.filter((p) => p.isBestSeller);
+  if (filters.newArrivalsOnly) results = results.filter((p) => p.isNewArrival);
+
+  switch (filters.sort) {
+    case "price-asc":
+      results.sort((a, b) => a.price - b.price);
+      break;
+    case "price-desc":
+      results.sort((a, b) => b.price - a.price);
+      break;
+    case "newest":
+      results.reverse();
+      break;
+    case "rating":
+      results.sort((a, b) => b.rating - a.rating);
+      break;
+    case "featured":
+    default:
+      results.sort((a, b) => Number(b.featured) - Number(a.featured));
+      break;
+  }
+
+  return results;
+}
+
 export async function getProducts(filters: ProductFilters = {}): Promise<ProductWithRelations[]> {
+  if (DEMO_MODE) return filterDemoProducts(filters);
+
   const supabase = await createClient();
   const hasCategoryFilter = !!filters.categorySlug && filters.categorySlug !== "all";
   // !inner turns the embed into an inner join so the category filter applies.
@@ -163,6 +213,8 @@ export async function getProducts(filters: ProductFilters = {}): Promise<Product
 }
 
 export async function getProductBySlug(slug: string): Promise<ProductWithRelations | null> {
+  if (DEMO_MODE) return DEMO_PRODUCTS.find((p) => p.slug === slug) ?? null;
+
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("products")
@@ -176,6 +228,8 @@ export async function getProductBySlug(slug: string): Promise<ProductWithRelatio
 }
 
 export async function getFeaturedProducts(limit = 4): Promise<ProductWithRelations[]> {
+  if (DEMO_MODE) return DEMO_PRODUCTS.filter((p) => p.featured).slice(0, limit);
+
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("products")
@@ -189,6 +243,8 @@ export async function getFeaturedProducts(limit = 4): Promise<ProductWithRelatio
 }
 
 export async function getBestSellers(limit = 8): Promise<ProductWithRelations[]> {
+  if (DEMO_MODE) return DEMO_PRODUCTS.filter((p) => p.isBestSeller).slice(0, limit);
+
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("products")
@@ -202,6 +258,8 @@ export async function getBestSellers(limit = 8): Promise<ProductWithRelations[]>
 }
 
 export async function getProductById(id: string): Promise<ProductWithRelations | null> {
+  if (DEMO_MODE) return DEMO_PRODUCTS.find((p) => p.id === id) ?? null;
+
   const supabase = await createClient();
   const { data, error } = await supabase.from("products").select(PRODUCT_SELECT).eq("id", id).maybeSingle();
 
@@ -211,6 +269,8 @@ export async function getProductById(id: string): Promise<ProductWithRelations |
 
 /** Admin listing: includes inactive products too (admin-only RLS policy covers this). */
 export async function getAllProductsForAdmin(): Promise<ProductWithRelations[]> {
+  if (DEMO_MODE) return DEMO_PRODUCTS;
+
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("products")
@@ -225,6 +285,13 @@ export async function getRelatedProducts(
   product: ProductWithRelations,
   limit = 4,
 ): Promise<ProductWithRelations[]> {
+  if (DEMO_MODE) {
+    return DEMO_PRODUCTS.filter((p) => p.categoryId === product.categoryId && p.id !== product.id).slice(
+      0,
+      limit,
+    );
+  }
+
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("products")

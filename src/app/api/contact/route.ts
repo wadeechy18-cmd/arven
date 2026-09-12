@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { createClient } from "@/lib/supabase/server";
+import { DEMO_MODE } from "@/lib/demo-mode";
 
 const schema = z.object({
   name: z.string().min(1).max(120),
@@ -16,6 +17,8 @@ export async function POST(request: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Please fill in every field." }, { status: 400 });
   }
+
+  if (DEMO_MODE) return NextResponse.json({ ok: true });
 
   const supabase = await createClient();
   const { error } = await supabase.from("contact_messages").insert(parsed.data);

@@ -1,8 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
+import { DEMO_MODE } from "@/lib/demo-mode";
 import type { Profile } from "@/lib/supabase/types";
 
 /** The signed-in user's profile (role, name, phone), or null if signed out. */
 export async function getCurrentUser(): Promise<Profile | null> {
+  if (DEMO_MODE) return null;
+
   const supabase = await createClient();
   const {
     data: { user },

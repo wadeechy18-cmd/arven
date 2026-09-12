@@ -72,6 +72,12 @@ export function CheckoutForm({ initialEmail, initialName }: CheckoutFormProps) {
       return;
     }
 
+    // Demo mode: nothing is persisted server-side, so stash the full order
+    // for the confirmation page to read back out of sessionStorage.
+    if (data.order) {
+      sessionStorage.setItem(`demo-order-${data.orderNumber}`, JSON.stringify(data.order));
+    }
+
     clear();
     router.push(`/order-success/${data.orderNumber}`);
   }
