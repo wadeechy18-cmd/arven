@@ -1,6 +1,6 @@
 /**
- * Newsletter sign-up endpoint (used by the footer form). Saves subscribers to a
- * Resend audience, or emails the shop about each one. Setup: see lib/email.ts
+ * Newsletter sign-up endpoint (used by the footer form). Records subscribers in
+ * Formspree or a Resend audience (or emails the shop about each one). Setup: see lib/email.ts
  * or README → "Email: contact form & newsletter".
  */
 import { addSubscriber, emailConfigured } from "@/lib/email";

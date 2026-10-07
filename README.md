@@ -115,10 +115,33 @@ Full notes, including turning on automatic GST/HST/PST with Stripe Tax and order
 `TODO(stripe)` comment at the top of `app/api/checkout/route.ts`. Prices are always read from `data/products.ts`
 on the server, so customers can't change what they pay.
 
-## 6. Email: contact form & newsletter (Resend)
+## 6. Email: contact form & newsletter
 
-Both forms send through **Resend** (free for up to 3,000 emails a month). Until it's set up, the forms politely
-tell visitors to email the shop directly, so no message is ever silently lost.
+Pick **one** service. Until either is set up, the forms politely tell visitors to email the shop directly,
+so no message is ever silently lost. Both forms include a hidden spam trap.
+
+### Option A: Formspree (simplest)
+
+Free plan: 50 submissions a month. Messages land in the inbox you sign up with and are also listed on
+formspree.io.
+
+1. Go to **https://formspree.io** and sign up **with the shop's email** (the inbox that should receive messages).
+   Confirm your email when Formspree asks.
+2. Click **+ New form**, name it "Daymark website", and create it.
+3. Copy the **form ID**: the letters after `/f/` in the form's endpoint,
+   e.g. `https://formspree.io/f/`**`xyzabcde`**.
+4. In **Vercel → your project → Settings → Environment Variables**, add `FORMSPREE_FORM_ID` = that ID, then
+   **Deployments → ⋯ on the latest → Redeploy**.
+5. Test: send a message from the Contact page and sign up in the footer. Both arrive as Formspree emails
+   (newsletter ones say "New newsletter subscriber"). Formspree's first email may ask you to confirm the form.
+6. If nothing arrives: in Formspree open the form → **Settings** and turn **reCAPTCHA off** (the website sends
+   from its server, so the captcha can't be shown). Then check the form's **Submissions** tab.
+
+To export newsletter subscribers: Formspree → form → **Submissions → Export (CSV)**.
+
+### Option B: Resend (more control)
+
+Free plan: 3,000 emails a month. You can send from the shop's own address and keep a proper subscriber list.
 
 1. Go to **https://resend.com** and sign up **with the inbox that should receive website messages**
    (e.g. the shop's email). Before you verify a domain, Resend can only deliver to this address.
@@ -137,14 +160,13 @@ tell visitors to email the shop directly, so no message is ever silently lost.
 
 5. **Deployments → ⋯ on the latest → Redeploy.** Then send a test message from the Contact page and sign up
    in the footer to check.
-6. *(When the shop has its own domain)* Resend → **Domains → Add domain**, add the DNS records it shows
-   (in Vercel → Domains if the domain is there), then set `CONTACT_FROM_EMAIL`. Emails then come from the
-   shop's own address and can be delivered to any inbox.
+6. *(When the shop has its own domain)* Resend → **Domains → Add domain**, add the DNS records it shows,
+   then set `CONTACT_FROM_EMAIL`. Emails then come from the shop's own address and can reach any inbox.
 
 Contact emails arrive with the customer's address as "reply-to", so hitting **Reply** answers the customer.
-Subscribers collected in a Resend audience can be emailed from Resend (**Broadcasts**) or exported as CSV.
+Subscribers in a Resend audience can be emailed from Resend (**Broadcasts**) or exported as CSV.
 
-Both forms include a hidden spam trap, so most bots are ignored automatically.
+If both `FORMSPREE_FORM_ID` and `RESEND_API_KEY` are set, Formspree is used.
 
 ## 7. Visitor analytics (Vercel Web Analytics)
 

@@ -1,9 +1,9 @@
 /**
  * Contact form endpoint (used by /contact). Emails each message to the shop
- * via Resend. Setup: see lib/email.ts or README → "Email: contact form & newsletter".
+ * via Formspree or Resend. Setup: see lib/email.ts or README → "Email: contact form & newsletter".
  */
 import { site } from "@/data/site";
-import { emailConfigured, sendToShop } from "@/lib/email";
+import { emailConfigured, sendContactMessage } from "@/lib/email";
 
 export async function POST(request: Request) {
   let data: Record<string, unknown>;
@@ -36,20 +36,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    await sendToShop({
-      subject: `Website enquiry: ${topic}${order ? ` (order ${order})` : ""}`,
-      replyTo: email,
-      text: [
-        `Name: ${name}`,
-        `Email: ${email}`,
-        `Topic: ${topic}`,
-        `Order number: ${order || "-"}`,
-        "",
-        message,
-        "",
-        "Reply to this email to answer the customer directly.",
-      ].join("\n"),
-    });
+    await sendContactMessage({ name, email, topic, order, message });
   } catch (err) {
     console.error("[contact]", err);
     return Response.json(
