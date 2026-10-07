@@ -19,7 +19,7 @@ export function Footer() {
         <div className="lg:col-span-5">
           <h2 className="text-2xl font-semibold">Join the Daymark list</h2>
           <p className="mt-2 max-w-md text-canvas/75">
-            New arrivals, restocks and member-only offers. Plus 10% off your first order.
+            New arrivals, restocks and member-only offers, straight to your inbox.
           </p>
           <div className="mt-6 max-w-md">
             <NewsletterForm tone="dark" />

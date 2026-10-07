@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
 import { DM_Sans } from "next/font/google";
 import { AnnouncementBar } from "@/components/AnnouncementBar";
@@ -49,6 +50,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Footer />
           <CartDrawer />
         </CartProvider>
+        {/* Visitor stats: switch on in Vercel → project → Analytics. Cookie-free. */}
+        <Analytics />
       </body>
     </html>
   );

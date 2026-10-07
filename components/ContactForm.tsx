@@ -31,7 +31,11 @@ export function ContactForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="mt-6 grid gap-5">
+    <form onSubmit={onSubmit} className="relative mt-6 grid gap-5">
+      <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+        <label htmlFor="c-website">Leave this empty</label>
+        <input id="c-website" name="website" tabIndex={-1} autoComplete="off" />
+      </div>
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
           <label htmlFor="c-name" className="text-sm font-medium">

@@ -9,6 +9,7 @@ export function NewsletterForm({ tone = "light" }: { tone?: "light" | "dark" }) 
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState("");
+  const [website, setWebsite] = useState(""); // spam trap, stays empty for people
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -17,7 +18,7 @@ export function NewsletterForm({ tone = "light" }: { tone?: "light" | "dark" }) 
       const res = await fetch("/api/newsletter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, website }),
       });
       const data = (await res.json()) as { message?: string };
       if (!res.ok) throw new Error(data.message ?? "Something went wrong.");
@@ -32,7 +33,17 @@ export function NewsletterForm({ tone = "light" }: { tone?: "light" | "dark" }) 
 
   const dark = tone === "dark";
   return (
-    <form onSubmit={onSubmit} noValidate={false}>
+    <form onSubmit={onSubmit} className="relative">
+      <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+        <label htmlFor={`newsletter-website-${tone}`}>Leave this empty</label>
+        <input
+          id={`newsletter-website-${tone}`}
+          tabIndex={-1}
+          autoComplete="off"
+          value={website}
+          onChange={(e) => setWebsite(e.target.value)}
+        />
+      </div>
       <label htmlFor={`newsletter-${tone}`} className="sr-only">
         Email address
       </label>

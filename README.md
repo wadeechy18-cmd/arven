@@ -115,16 +115,46 @@ Full notes, including turning on automatic GST/HST/PST with Stripe Tax and order
 `TODO(stripe)` comment at the top of `app/api/checkout/route.ts`. Prices are always read from `data/products.ts`
 on the server, so customers can't change what they pay.
 
-## 6. Newsletter and contact form
+## 6. Email: contact form & newsletter (Resend)
 
-Both forms work and show success messages, but **don't send anything anywhere yet**. To connect them:
+Both forms send through **Resend** (free for up to 3,000 emails a month). Until it's set up, the forms politely
+tell visitors to email the shop directly, so no message is ever silently lost.
 
-- **Newsletter** (footer): `app/api/newsletter/route.ts`, see `TODO(newsletter)` (Mailchimp, Klaviyo, Kit, etc.).
-- **Contact form**: `app/api/contact/route.ts`, see `TODO(contact)` (Resend, Formspree, SendGrid, etc.).
+1. Go to **https://resend.com** and sign up **with the inbox that should receive website messages**
+   (e.g. the shop's email). Before you verify a domain, Resend can only deliver to this address.
+2. **API Keys → Create API key** → name it "Daymark website" → permission **Full access** → copy the key
+   (starts with `re_`). You only see it once.
+3. *(Newsletter list, optional)* **Audiences** → open the default audience → copy its **ID**.
+   Without this, the shop simply gets an email for every new subscriber.
+4. In **Vercel → your project → Settings → Environment Variables**, add:
+
+   | Name | Value | Needed? |
+   |---|---|---|
+   | `RESEND_API_KEY` | the key from step 2 | **Yes** |
+   | `RESEND_AUDIENCE_ID` | the ID from step 3 | Optional |
+   | `CONTACT_TO_EMAIL` | where messages should go (defaults to the email in `data/site.ts`) | Optional |
+   | `CONTACT_FROM_EMAIL` | e.g. `Daymark <hello@daymark.ca>`, only after step 6 | Optional |
+
+5. **Deployments → ⋯ on the latest → Redeploy.** Then send a test message from the Contact page and sign up
+   in the footer to check.
+6. *(When the shop has its own domain)* Resend → **Domains → Add domain**, add the DNS records it shows
+   (in Vercel → Domains if the domain is there), then set `CONTACT_FROM_EMAIL`. Emails then come from the
+   shop's own address and can be delivered to any inbox.
+
+Contact emails arrive with the customer's address as "reply-to", so hitting **Reply** answers the customer.
+Subscribers collected in a Resend audience can be emailed from Resend (**Broadcasts**) or exported as CSV.
+
+Both forms include a hidden spam trap, so most bots are ignored automatically.
+
+## 7. Visitor analytics (Vercel Web Analytics)
+
+The code is already in the site. To switch it on: **Vercel → your project → Analytics → Enable**.
+Visitor numbers, top pages, referrers and devices appear there within a few minutes of real visits.
+It doesn't use cookies, so no cookie banner is needed.
 
 ---
 
-## 7. Deploy to Vercel
+## 8. Deploy to Vercel
 
 1. Push this project to a GitHub repository. If it lives in a subfolder (like `daymark/`), that's fine.
 2. Go to https://vercel.com/new and import the repository.
