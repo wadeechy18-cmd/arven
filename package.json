@@ -1,49 +1,29 @@
 {
-  "name": "arven",
+  "name": "daymark-storefront",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "typecheck": "tsc --noEmit",
-    "db:seed": "tsx scripts/seed.ts"
+    "lint": "eslint",
+    "images": "node --experimental-strip-types --disable-warning=ExperimentalWarning scripts/images.mts"
   },
   "dependencies": {
-    "@radix-ui/react-accordion": "^1.2.1",
-    "@radix-ui/react-dialog": "^1.1.2",
-    "@radix-ui/react-label": "^2.1.0",
-    "@radix-ui/react-radio-group": "^1.2.1",
-    "@radix-ui/react-select": "^2.1.2",
-    "@radix-ui/react-separator": "^1.1.0",
-    "@radix-ui/react-slot": "^1.1.0",
-    "@radix-ui/react-tabs": "^1.1.1",
-    "@radix-ui/react-toast": "^1.2.2",
-    "@supabase/ssr": "^0.5.1",
-    "@supabase/supabase-js": "^2.45.4",
-    "class-variance-authority": "^0.7.0",
-    "clsx": "^2.1.1",
-    "lucide-react": "^0.451.0",
-    "next": "^14.2.15",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "server-only": "^0.0.1",
-    "tailwind-merge": "^2.5.3",
-    "zod": "^3.23.8",
-    "zustand": "^4.5.5"
+    "next": "16.3.6",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
   },
   "devDependencies": {
-    "@types/node": "^20.16.11",
-    "@types/react": "^18.3.11",
-    "@types/react-dom": "^18.3.0",
-    "autoprefixer": "^10.4.20",
-    "dotenv": "^16.4.5",
-    "eslint": "^8.57.1",
-    "eslint-config-next": "^14.2.15",
-    "postcss": "^8.4.47",
-    "tailwindcss": "^3.4.13",
-    "tsx": "^4.19.1",
-    "typescript": "^5.6.3"
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.6",
+    "sharp": "^0.35.5",
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }
